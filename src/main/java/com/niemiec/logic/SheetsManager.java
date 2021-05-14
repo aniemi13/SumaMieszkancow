@@ -62,25 +62,25 @@ public class SheetsManager {
 			Row numer = sheet.getRow(5);
 			Row licznik = sheet.getRow(7);
 			
-			if (licznik != null) {
+			if (numer != null) {
 				int wiersze = sheet.getLastRowNum();
 				int ludzie = 0;
 				String dom = null;
-				for (int j = 1; j <= wiersze; j++) {
+				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
+				for (int j = 1; j <= wiersze; j++, ludzie++) {
 					
-					if (numer.getCell(j) != null) {
+					if (sheet.getRow(j).getCell(5) != null) {
 						
-						if (j > 1) {
+						if (j > 1 || j == wiersze) {
 							town.setHomeAndResidents(dom, Integer.toString(ludzie));
-							System.out.print("Dom: " + dom + " ");
-							System.out.println("Ludzie: " + ludzie);
+							
 						}
-						dom = numer.getCell(j).toString();
-						
-						ludzie = 1;
-					} else {
-						ludzie++;
+						dom = sheet.getRow(j).getCell(5).toString();
+						System.out.println("Dom: " + dom + " ");
+						ludzie = 0;
 					}
+					//System.out.print("Dom: " + sheet.getRow(j).getCell(5) + " ");
+					//System.out.println("Ludzie: " + ludzie);
 				}
 				
 				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
@@ -94,8 +94,8 @@ public class SheetsManager {
 		}
 		
 		for (Town t: towns) {
-			//if (t.getName() != null)
-				//System.out.println(t.getName() + " " + t.getStreet() + " " + t.getHomes().getHomesNumbers() + " " + t.getHomes().getNumberOfResidents());
+			if (t.getName() != null)
+				System.out.println(t.getName() + " " + t.getStreet() + " " + t.getHomes().getHomesNumbers() + " " + t.getHomes().getNumberOfResidents());
 		}
 	}
 	
