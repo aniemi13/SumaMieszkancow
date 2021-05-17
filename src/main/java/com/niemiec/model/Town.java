@@ -22,8 +22,8 @@ public class Town {
 		this.street = street;
 	}
 	
-	public void setHomeAndResidents(String home, String residents) {
-		homes.setHome(home, residents);
+	public void setHomeAndResidents(String home, String flat, String residents) {
+		homes.setHome(home, flat, residents);
 	}
 	
 	public Homes getHomes() {

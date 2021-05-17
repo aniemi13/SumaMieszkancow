@@ -2,6 +2,8 @@ package com.niemiec.logic;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -64,23 +66,29 @@ public class SheetsManager {
 			
 			if (numer != null) {
 				int wiersze = sheet.getLastRowNum();
-				int ludzie = 0;
+				double ludzie = 0.0;
 				String dom = null;
 				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
-				for (int j = 1; j <= wiersze; j++, ludzie++) {
+				for (int j = 1; j <= wiersze; j++) {
 					
 					if (sheet.getRow(j).getCell(5) != null) {
 						
 						if (j > 1 || j == wiersze) {
-							town.setHomeAndResidents(dom, Integer.toString(ludzie));
+							town.setHomeAndResidents(dom, "", Double.toString(ludzie));
 							
 						}
 						dom = sheet.getRow(j).getCell(5).toString();
-						System.out.println("Dom: " + dom + " ");
+						//System.out.println("Dom: " + dom + " ");
 						ludzie = 0;
 					}
 					//System.out.print("Dom: " + sheet.getRow(j).getCell(5) + " ");
 					//System.out.println("Ludzie: " + ludzie);
+					if (sheet.getRow(j).getCell(3) != null) {
+						ludzie += Double.parseDouble(sheet.getRow(j).getCell(3).toString());
+					}
+					if (j == wiersze) {
+						town.setHomeAndResidents(dom, "", Double.toString(ludzie));
+					}
 				}
 				
 				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
@@ -97,8 +105,92 @@ public class SheetsManager {
 			if (t.getName() != null)
 				System.out.println(t.getName() + " " + t.getStreet() + " " + t.getHomes().getHomesNumbers() + " " + t.getHomes().getNumberOfResidents());
 		}
+		
+		saveInFile1(towns);
 	}
 	
+	private void saveInFile1(List<Town> towns) {
+		HSSFWorkbook docelowy = new HSSFWorkbook();
+		HSSFSheet arkusz = docelowy.createSheet("Arkusz 1");
+		
+		int rowCount = 0;
+
+		for (Town t: towns) {
+			String city = t.getName();
+			String street = t.getStreet();
+			
+			for (int i = 0; i < t.getHomes().getHomesNumbers().size(); i++) {
+				int countCell = 0;
+				Row row = arkusz.createRow(rowCount++);
+				Cell cell = row.createCell(countCell++);
+				cell.setCellValue(city);
+				cell = row.createCell(countCell++);
+				cell.setCellValue(street);
+				cell = row.createCell(countCell++);
+				cell.setCellValue(t.getHomes().getHomesNumbers().get(i));
+				cell = row.createCell(countCell);
+				cell.setCellValue(t.getHomes().getNumberOfResidents().get(i));
+			}
+			
+			if (t.getHomes().getHomesNumbers().isEmpty()) {
+				int countCell = 0;
+				Row row = arkusz.createRow(rowCount++);
+				Cell cell = row.createCell(countCell++);
+				cell.setCellValue(city);
+				cell = row.createCell(countCell++);
+				cell.setCellValue(street);
+				cell = row.createCell(countCell);
+			}
+			
+		}
+		
+		try (FileOutputStream outputStream = new FileOutputStream("C:\\Users\\a.niemiec\\Desktop\\mieszkancy ulic\\Calosc.xls")) {
+			docelowy.write(outputStream);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
-	
+	private void saveInFile2(List<Town> towns) {
+		HSSFWorkbook docelowy = new HSSFWorkbook();
+		HSSFSheet arkusz = docelowy.createSheet("Arkusz 1");
+		
+		int rowCount = 0;
+
+		for (Town t: towns) {
+			String city = t.getName();
+			String street = t.getStreet();
+			int countCell = 0;
+			Row row = arkusz.createRow(rowCount++);
+			int rezidents = 0;
+			for (int i = 0; i < t.getHomes().getNumberOfResidents().size(); i++) {
+				rezidents += Integer.parseInt(t.getHomes().getNumberOfResidents().get(i));
+				
+			}
+			
+			Cell cell = row.createCell(countCell++);
+			cell.setCellValue(city);
+			cell = row.createCell(countCell++);
+			cell.setCellValue(street);
+			cell = row.createCell(countCell);
+			cell.setCellValue(rezidents);
+			
+			
+		}
+		
+		try (FileOutputStream outputStream = new FileOutputStream("C:\\Users\\a.niemiec\\Desktop\\mieszkancy ulic\\Calosc2.xls")) {
+			docelowy.write(outputStream);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 }
