@@ -10,6 +10,7 @@ public class Homes {
 	
 	public Homes() {
 		homesNumbers = new ArrayList<String>();
+		flatNumbers = new ArrayList<String>();
 		numberOfResidents = new ArrayList<String>();
 	}
 	

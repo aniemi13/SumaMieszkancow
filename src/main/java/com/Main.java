@@ -1,6 +1,7 @@
 package com;
 
 import com.niemiec.logic.SheetsManager;
+import com.niemiec.logic.SheetsManager2;
 
 public class Main {
 
@@ -11,7 +12,7 @@ public class Main {
 		String lastFile = "185";
 		
 		
-		SheetsManager manager = new SheetsManager(path, firstFile, lastFile);
+		SheetsManager2 manager = new SheetsManager2(path, firstFile, lastFile);
 		manager.loadData();
 	}
 

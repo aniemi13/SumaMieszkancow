@@ -16,13 +16,13 @@ import org.apache.poi.ss.usermodel.Row;
 
 import com.niemiec.model.Town;
 
-public class SheetsManager {
+public class SheetsManager2 {
 	private List<Town> towns;
 	private String path;
 	private String firstFile;
 	private String lastFile;
 	
-	public SheetsManager(String path, String firstFile, String lastFile) {
+	public SheetsManager2(String path, String firstFile, String lastFile) {
 		towns = new ArrayList<Town>();
 		this.path = path;
 		this.firstFile = firstFile;
@@ -60,86 +60,63 @@ public class SheetsManager {
 				}
 			}
 			
-			Row mieszkancy = sheet.getRow(3);
-			Row numer = sheet.getRow(5);
-			Row licznik = sheet.getRow(7);
 			
-			if (numer != null) {
+			//if (sheet.getRow(1).getCell(5) != null) {
 				int wiersze = sheet.getLastRowNum();
-				double ludzie = 0.0;
-				String dom = null;
-				String mieszkanie = null;
-				boolean wpisane = false;
-				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
+				String dom = "";
+				
+				//TODO tutaj je¿eli tylko jeden dom
+				//int ileNiepustych = counta(wiersze, sheet);
+				//System.out.println(sheet.getRow(1).getCell(0) + " " + ileNiepustych);
+				
 				for (int j = 1; j <= wiersze; j++) {
-					
+					double ludzie = 0.0;
 					if (sheet.getRow(j).getCell(5) != null) {
-						if (j == 1 || wpisane) {
-							dom = sheet.getRow(j).getCell(5).toString();
-							wpisane = false;
-						}
+						dom = sheet.getRow(j).getCell(5).toString();
+						
+						
+						
 						if (sheet.getRow(j).getCell(6) != null) {
-							mieszkanie = sheet.getRow(j).getCell(6).toString();
-							
-							ludzie = Double.parseDouble(sheet.getRow(j).getCell(3).toString());
-							town.setHomeAndResidents(dom, mieszkanie, Double.toString(ludzie));
-							int k = j + 1;
+							int licznik = 0;
 							try {
-								while (sheet.getRow(k).getCell(6) != null) {
-									if (sheet.getRow(k).getCell(5) != null) {
-										break;
+								while (sheet.getRow(j + licznik + 1).getCell(5) == null && sheet.getRow(j + licznik + 1).getCell(3) != null) {
+									licznik++;
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+							}
+							for (int k = j; k < j + licznik + 1; k++) {
+								String ulica = "";
+								if (sheet.getRow(k).getCell(3) != null) {
+									if (sheet.getRow(k).getCell(6) != null) {
+										ulica = sheet.getRow(k).getCell(6).toString();
 									}
-									mieszkanie = sheet.getRow(k).getCell(6).toString();
-									
 									ludzie = Double.parseDouble(sheet.getRow(k).getCell(3).toString());
-									town.setHomeAndResidents(dom, mieszkanie, Double.toString(ludzie));
-									wpisane = true;
-									k++;
+									town.setHomeAndResidents(dom, ulica, Double.toString(ludzie));
+								}
 							}
-							} catch(Exception e) {
-								
-							}
-							if (k > j + 1) {
-								j = k - 1;
-								continue;
-							}
+							
 							
 						} else {
-							if (j > 1 || j == wiersze) {
-								town.setHomeAndResidents(dom, "", Double.toString(ludzie));
-								wpisane = true;
-								
+							int licznik = 0;
+							try {
+								while (sheet.getRow(j + licznik + 1).getCell(5) == null && sheet.getRow(j + licznik + 1).getCell(3) != null) {
+									licznik++;
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
 							}
-							//System.out.println("Dom: " + dom + " ");
-							ludzie = 0;
+							for (int k = j; k < j + licznik + 1; k++) {
+								if (sheet.getRow(k).getCell(3) != null)
+									ludzie += Double.parseDouble(sheet.getRow(k).getCell(3).toString());
+							}
+							town.setHomeAndResidents(dom, "", Double.toString(ludzie));
+							j = j + licznik;
+							
 						}
-						
-						
-						
-						
-					}
-					//System.out.print("Dom: " + sheet.getRow(j).getCell(5) + " ");
-					//System.out.println("Ludzie: " + ludzie);
-					try {
-					if (sheet.getRow(j).getCell(3) != null) {
-						ludzie += Double.parseDouble(sheet.getRow(j).getCell(3).toString());
-					}
-					} catch (Exception e) {
-						// TODO: handle exception
-					}
-					if (j == wiersze) {
-						town.setHomeAndResidents(dom, "", Double.toString(ludzie));
 					}
 				}
-				
-				//System.out.println(town.getName() + " " + town.getStreet() + " " + wiersze);
-			}
-			try {
-				file.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			//}
 		}
 		
 		for (Town t: towns) {
@@ -151,6 +128,18 @@ public class SheetsManager {
 		saveInFile2(towns);
 	}
 	
+	private int counta(int wiersze, HSSFSheet sheet) {
+		// TODO Auto-generated method stub
+		int licznik = 0;
+		for (int i = 0; i < wiersze; i++) {
+			if (sheet.getRow(i).getCell(5) != null) {
+				if (sheet.getRow(i).getCell(5).toString().length() > 0)
+					licznik++;
+			}
+		}
+		return licznik;
+	}
+
 	private void saveInFile1(List<Town> towns) {
 		HSSFWorkbook docelowy = new HSSFWorkbook();
 		HSSFSheet arkusz = docelowy.createSheet("Arkusz 1");
